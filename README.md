@@ -1524,7 +1524,7 @@ This project was developed as a technical assessment project for Wexa AI.
 
 # Author
 
-**Adamson Oladipupo**
+**Abdulwahab Adamson**
 
 GitHub:
 
