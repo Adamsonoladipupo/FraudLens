@@ -1,19 +1,28 @@
 from app.db.cognodb import cognodb
 
 
-def main() -> None:
+def main():
     cognodb.connect()
 
     try:
-        cognodb.verify_connection()
-
         result = cognodb.execute_query(
             """
-            RETURN 'FraudLens' AS application
+            MATCH (a:Account)-[:USES_DEVICE]->(d:Device)
+                  <-[:USES_DEVICE]-(other:Account)
+
+            WHERE a.id <> other.id
+
+            RETURN
+                a.id AS account,
+                d.id AS shared_device,
+                other.id AS connected_account
+
+            LIMIT 10
             """
         )
 
-        print(result)
+        for record in result:
+            print(record)
 
     finally:
         cognodb.close()
