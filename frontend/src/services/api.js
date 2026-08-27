@@ -1,5 +1,6 @@
 const API_BASE_URL =
-  import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+
+  import.meta.env.VITE_API_URL || "http://localhost:5173";
 
 async function request(endpoint) {
   const response = await fetch(`${API_BASE_URL}${endpoint}`);
@@ -7,7 +8,7 @@ async function request(endpoint) {
   if (!response.ok) {
     const error = await response.text();
     throw new Error(error || "API request failed");
-  }
+  }import.meta.env.VITE_API_URL || "http://localhost:5173";
 
   return response.json();
 }

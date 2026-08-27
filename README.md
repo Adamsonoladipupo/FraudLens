@@ -2,6 +2,26 @@
 
 ## Graph-Powered Retail Banking Fraud Investigation & Risk Explorer
 
+<p align="center">
+  <a href="https://fraudlens-ui.onrender.com">
+    <img src="https://img.shields.io/badge/Live%20Frontend-FraudLens-blue?style=for-the-badge" alt="Live Frontend">
+  </a>
+  <a href="https://fraudlens-backend-api.onrender.com/docs">
+    <img src="https://img.shields.io/badge/Interactive%20Swagger-API%20Docs-green?style=for-the-badge" alt="Interactive Swagger UI">
+  </a>
+  <a href="https://fraudlens-backend-api.onrender.com/health">
+    <img src="https://img.shields.io/badge/API-Health-orange?style=for-the-badge" alt="API Health">
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://fraudlens-ui.onrender.com">🚀 Launch FraudLens</a>
+  &nbsp;&nbsp;|&nbsp;&nbsp;
+  <a href="https://fraudlens-backend-api.onrender.com/docs">📚 Interactive Swagger UI</a>
+  &nbsp;&nbsp;|&nbsp;&nbsp;
+  <a href="https://fraudlens-backend-api.onrender.com/health">❤️ API Health</a>
+</p>
+
 FraudLens is a graph-powered fraud investigation application designed to help retail banking investigators identify and understand suspicious relationships between customers, accounts, transactions, devices, IP addresses, and merchants.
 
 Instead of analyzing transactions independently, FraudLens uses **CognoDB Cloud**, a graph database, to model and explore relationships between financial entities. This allows investigators to discover multi-hop connections and patterns that may indicate coordinated fraudulent activity.

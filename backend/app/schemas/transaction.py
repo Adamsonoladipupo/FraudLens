@@ -1,14 +1,16 @@
 from datetime import datetime
-from decimal import Decimal
+from typing import Any
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
-class Transaction(BaseModel):
+class TransactionResponse(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
     id: str
-    amount: Decimal
-    currency: str
-    timestamp: datetime
-    transaction_type: str
-    status: str
-    risk_score: int
+    amount: float | None = None
+    currency: str | None = None
+    riskScore: float | None = None
+    transactionType: str | None = None
+    status: str | None = None
+    timestamp: Any | None = None

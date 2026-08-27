@@ -6,6 +6,8 @@ from app.repositories.transaction_repository import (
 from app.services.transaction_service import (
     TransactionService,
 )
+from app.schemas.transaction import TransactionResponse
+from app.schemas.enums import RiskLevel, TransactionStatus, TransactionType
 
 
 router = APIRouter(
@@ -18,7 +20,16 @@ repository = TransactionRepository()
 service = TransactionService(repository)
 
 
-@router.get("")
+@router.get(
+    "",
+    response_model=list[TransactionResponse],
+    summary="Get Transactions",
+    description=(
+            "Return transactions with optional filters. "
+            "Transactions are retrieved from CognoDB using "
+            "parameterized openCypher queries."
+    ),
+)
 async def get_transactions(
         limit: int = Query(
             default=50,
@@ -26,15 +37,15 @@ async def get_transactions(
             le=100,
             description="Maximum number of transactions to return.",
         ),
-        risk_level: str | None = Query(
+        risk_level: RiskLevel | None = Query(
             default=None,
-            description="Filter by risk level: LOW, MEDIUM, HIGH.",
+            description="Filter by risk level.",
         ),
-        status: str | None = Query(
+        status: TransactionStatus | None = Query(
             default=None,
             description="Filter by transaction status.",
         ),
-        transaction_type: str | None = Query(
+        transaction_type: TransactionType | None = Query(
             default=None,
             description="Filter by transaction type.",
         ),
