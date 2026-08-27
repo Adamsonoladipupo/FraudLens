@@ -1485,9 +1485,7 @@ Automatically update the graph when new transaction events arrive.
 
 ---
 
-# Assessment Alignment
-
-FraudLens is designed around the requirements of the Wexa AI technical assessment.
+# Project Alignment
 
 | Requirement | Implementation |
 |---|---|
@@ -1536,11 +1534,6 @@ https://github.com/YOUR_USERNAME/fraudlens
 
 ---
 
-# License
-
-This project was developed as a technical assessment project for Wexa AI.
-
----
 
 # Author
 
