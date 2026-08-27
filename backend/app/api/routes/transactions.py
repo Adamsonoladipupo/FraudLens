@@ -1,6 +1,11 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException, Query
 
-from app.db.cognodb import cognodb
+from app.repositories.transaction_repository import (
+    TransactionRepository,
+)
+from app.services.transaction_service import (
+    TransactionService,
+)
 
 
 router = APIRouter(
@@ -9,23 +14,50 @@ router = APIRouter(
 )
 
 
+repository = TransactionRepository()
+service = TransactionService(repository)
+
+
 @router.get("")
-async def get_transactions():
-    query = """
-    MATCH (t:Transaction)
-
-    RETURN
-        t.id AS id,
-        t.amount AS amount,
-        t.currency AS currency,
-        t.riskScore AS riskScore,
-        t.transactionType AS transactionType,
-        t.status AS status,
-        t.timestamp AS timestamp
-
-    ORDER BY t.timestamp DESC
-
-    LIMIT 50
+async def get_transactions(
+        limit: int = Query(
+            default=50,
+            ge=1,
+            le=100,
+            description="Maximum number of transactions to return.",
+        ),
+        risk_level: str | None = Query(
+            default=None,
+            description="Filter by risk level: LOW, MEDIUM, HIGH.",
+        ),
+        status: str | None = Query(
+            default=None,
+            description="Filter by transaction status.",
+        ),
+        transaction_type: str | None = Query(
+            default=None,
+            description="Filter by transaction type.",
+        ),
+        transaction_id: str | None = Query(
+            default=None,
+            description="Filter by transaction ID.",
+        ),
+):
+    """
+    Return transactions with optional filters.
     """
 
-    return cognodb.execute_query(query)
+    try:
+        return service.get_transactions(
+            limit=limit,
+            risk_level=risk_level,
+            status=status,
+            transaction_type=transaction_type,
+            transaction_id=transaction_id,
+        )
+
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=400,
+            detail=str(exc),
+        )

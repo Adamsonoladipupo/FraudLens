@@ -20,8 +20,13 @@ service = InvestigationService(repository)
 
 @router.get("/{transaction_id}")
 async def investigate_transaction(
-        transaction_id: str,
+    transaction_id: str,
 ):
+    """
+    Investigate a transaction and return its
+    connected graph context and risk assessment.
+    """
+
     result = service.investigate_transaction(
         transaction_id
     )
@@ -32,10 +37,29 @@ async def investigate_transaction(
             detail="Transaction not found",
         )
 
-    suspicious_paths = service.get_suspicious_paths(
+    return result
+
+
+@router.get("/{transaction_id}/paths")
+async def get_suspicious_paths(
+    transaction_id: str,
+):
+    """
+    Return suspicious graph paths associated
+    with a transaction.
+    """
+
+    # First verify that the transaction exists.
+    result = service.investigate_transaction(
         transaction_id
     )
 
-    result["suspicious_paths"] = suspicious_paths
+    if result is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Transaction not found",
+        )
 
-    return result
+    return service.get_suspicious_paths(
+        transaction_id
+    )

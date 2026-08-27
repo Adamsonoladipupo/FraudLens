@@ -6,8 +6,8 @@ from app.db.cognodb import cognodb
 class InvestigationRepository:
 
     def get_transaction_context(
-            self,
-            transaction_id: str,
+        self,
+        transaction_id: str,
     ) -> dict[str, Any] | None:
         """
         Retrieve the transaction and the connected graph
@@ -31,20 +31,38 @@ class InvestigationRepository:
 
         OPTIONAL MATCH (otherIpAccount:Account)-[:USES_IP]->(ip)
 
+        OPTIONAL MATCH (account)-[:MAKES]->(accountTransaction:Transaction)
+
+        OPTIONAL MATCH (otherAccount)-[:MAKES]->(deviceTransaction:Transaction)
+
+        OPTIONAL MATCH (otherIpAccount)-[:MAKES]->(ipTransaction:Transaction)
+
         RETURN
             t,
             account,
             customer,
             merchant,
+
             collect(DISTINCT device) AS devices,
-            collect(DISTINCT otherAccount) AS connected_accounts,
+
             collect(DISTINCT ip) AS ip_addresses,
-            collect(DISTINCT otherIpAccount) AS connected_ip_accounts
+
+            collect(DISTINCT otherAccount) AS connected_accounts,
+
+            collect(DISTINCT otherIpAccount) AS connected_ip_accounts,
+
+            collect(DISTINCT accountTransaction) AS account_transactions,
+
+            collect(DISTINCT deviceTransaction) AS device_transactions,
+
+            collect(DISTINCT ipTransaction) AS ip_transactions
         """
 
         records = cognodb.execute_query(
             query,
-            {"transaction_id": transaction_id},
+            {
+                "transaction_id": transaction_id,
+            },
         )
 
         if not records:
@@ -53,36 +71,39 @@ class InvestigationRepository:
         return records[0]
 
     def get_suspicious_paths(
-            self,
-            transaction_id: str,
+        self,
+        transaction_id: str,
     ) -> list[dict[str, Any]]:
         """
-        Find multi-hop relationships around a transaction
-        that may indicate coordinated fraud.
+        Find potentially suspicious graph paths connected
+        to a transaction.
+
+        A suspicious path exists when another account is
+        connected through a shared device or IP address.
         """
 
         query = """
         MATCH (t:Transaction {id: $transaction_id})
-        MATCH (account:Account)-[:MAKES]->(t)
 
-        MATCH path =
-            (account)-[:USES_DEVICE|USES_IP]->(shared)
-            <-[:USES_DEVICE|USES_IP]-(otherAccount:Account)
-            -[:MAKES]->(otherTransaction:Transaction)
+        OPTIONAL MATCH (account:Account)-[:MAKES]->(t)
+
+        OPTIONAL MATCH path =
+            (account)-[:USES_DEVICE|USES_IP]->(node)<-
+            [:USES_DEVICE|USES_IP]-(otherAccount:Account)
 
         WHERE otherAccount.id <> account.id
-          AND otherTransaction.id <> t.id
 
-        RETURN
-            labels(shared)[0] AS shared_entity_type,
-            shared.id AS shared_entity_id,
+        RETURN DISTINCT
             otherAccount.id AS connected_account_id,
-            otherTransaction.id AS connected_transaction_id,
-            length(path) AS hops
-        ORDER BY hops ASC
+            labels(node)[0] AS connection_type,
+            node.id AS connection_id
         """
 
-        return cognodb.execute_query(
+        records = cognodb.execute_query(
             query,
-            {"transaction_id": transaction_id},
+            {
+                "transaction_id": transaction_id,
+            },
         )
+
+        return records or []
