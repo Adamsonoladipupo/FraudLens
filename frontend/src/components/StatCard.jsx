@@ -1,20 +1,30 @@
-function StatCard({ label, value, description }) {
+function StatCard({
+  title,
+  value,
+  description,
+}) {
   return (
-    <div className="stat-card">
-      <span className="stat-label">
-        {label}
-      </span>
+    <article className="stat-card">
+      <div className="stat-card-header">
+        <span className="stat-title">
+          {title}
+        </span>
 
-      <strong className="stat-value">
+        <span className="stat-icon">
+          ↗
+        </span>
+      </div>
+
+      <div className="stat-value">
         {value}
-      </strong>
+      </div>
 
       {description && (
-        <span className="stat-description">
+        <div className="stat-description">
           {description}
-        </span>
+        </div>
       )}
-    </div>
+    </article>
   );
 }
 

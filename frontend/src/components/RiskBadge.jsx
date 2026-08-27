@@ -1,9 +1,11 @@
 function RiskBadge({ level }) {
-  const normalizedLevel = level?.toUpperCase() || "UNKNOWN";
+  const normalizedLevel = level?.toLowerCase();
 
   return (
-    <span className={`risk-badge risk-${normalizedLevel.toLowerCase()}`}>
-      {normalizedLevel}
+    <span
+      className={`risk-badge risk-${normalizedLevel}`}
+    >
+      {level}
     </span>
   );
 }
