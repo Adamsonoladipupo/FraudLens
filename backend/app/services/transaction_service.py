@@ -16,6 +16,37 @@ class TransactionService:
     ) -> None:
         self.repository = repository
 
+    def get_transactions(
+            self,
+            limit: int = 50,
+            risk_level: str | None = None,
+            status: str | None = None,
+            transaction_type: str | None = None,
+            transaction_id: str | None = None,
+    ) -> list[dict[str, Any]]:
+        """
+        Retrieve transactions with optional filters.
+        """
+
+        if limit < 1:
+            limit = 1
+
+        if limit > 100:
+            limit = 100
+
+        transactions = self.repository.get_transactions(
+            limit=limit,
+            risk_level=risk_level,
+            status=status,
+            transaction_type=transaction_type,
+            transaction_id=transaction_id,
+        )
+
+        return [
+            serialize_neo4j_value(transaction)
+            for transaction in transactions
+        ]
+
     def get_recent_transactions(
             self,
             limit: int = 50,
