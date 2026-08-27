@@ -1,46 +1,47 @@
 const API_BASE_URL =
-  "https://fraudlens-backend-api.onrender.com";
+  import.meta.env.VITE_API_URL || "https://fraudlens-backend-api.onrender.com";
 
-export async function getTransactions() {
-  const response = await fetch(
-    `${API_BASE_URL}/api/transactions`
-  );
+async function request(endpoint) {
+  const response = await fetch(`${API_BASE_URL}${endpoint}`);
 
   if (!response.ok) {
-    throw new Error(
-      `Failed to fetch transactions: ${response.status}`
-    );
+    const error = await response.text();
+    throw new Error(error || "API request failed");
   }
 
   return response.json();
 }
 
-export async function getDashboard() {
-  const response = await fetch(
-    `${API_BASE_URL}/api/dashboard`
-  );
-
-  if (!response.ok) {
-    throw new Error(
-      `Failed to fetch dashboard: ${response.status}`
-    );
-  }
-
-  return response.json();
+export function getDashboard() {
+  return request("/api/dashboard");
 }
 
-export async function investigateTransaction(
-  transactionId
-) {
-  const response = await fetch(
-    `${API_BASE_URL}/api/investigations/${transactionId}`
-  );
+export function getTransactions({
+  riskLevel = "",
+  transactionType = "",
+  limit = 50,
+} = {}) {
+  const params = new URLSearchParams();
 
-  if (!response.ok) {
-    throw new Error(
-      `Failed to investigate transaction: ${response.status}`
-    );
+  if (riskLevel) {
+    params.set("risk_level", riskLevel);
   }
 
-  return response.json();
+  if (transactionType) {
+    params.set("transaction_type", transactionType);
+  }
+
+  params.set("limit", limit);
+
+  return request(`/api/transactions?${params.toString()}`);
+}
+
+export function investigateTransaction(transactionId) {
+  return request(`/api/investigations/${transactionId}`);
+}
+
+export function getSuspiciousPaths(transactionId) {
+  return request(
+    `/api/investigations/${transactionId}/paths`
+  );
 }
