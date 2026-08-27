@@ -1,25 +1,46 @@
 const API_BASE_URL =
-  import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+  "https://fraudlens-backend-api.onrender.com";
 
-async function request(endpoint) {
-  const response = await fetch(`${API_BASE_URL}${endpoint}`);
+export async function getTransactions() {
+  const response = await fetch(
+    `${API_BASE_URL}/api/transactions`
+  );
 
   if (!response.ok) {
-    const error = await response.text();
-    throw new Error(error || "API request failed");
+    throw new Error(
+      `Failed to fetch transactions: ${response.status}`
+    );
   }
 
   return response.json();
 }
 
-export function getDashboard() {
-  return request("/api/dashboard");
+export async function getDashboard() {
+  const response = await fetch(
+    `${API_BASE_URL}/api/dashboard`
+  );
+
+  if (!response.ok) {
+    throw new Error(
+      `Failed to fetch dashboard: ${response.status}`
+    );
+  }
+
+  return response.json();
 }
 
-export function getTransactions() {
-  return request("/api/transactions");
-}
+export async function investigateTransaction(
+  transactionId
+) {
+  const response = await fetch(
+    `${API_BASE_URL}/api/investigations/${transactionId}`
+  );
 
-export function investigateTransaction(transactionId) {
-  return request(`/api/investigations/${transactionId}`);
+  if (!response.ok) {
+    throw new Error(
+      `Failed to investigate transaction: ${response.status}`
+    );
+  }
+
+  return response.json();
 }
